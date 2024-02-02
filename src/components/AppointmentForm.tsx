@@ -9,7 +9,14 @@ import {
   TimePicker,
 } from "antd";
 import { useState } from "react";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import { TimeRangePickerProps } from 'antd';
+
+import { RangeValue } from 'rc-picker/lib/interface'; // Import the RangeValue type
+import { getTimeSlots } from "../utils";
+
+
+
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 const AppointmentForm = () => {
@@ -23,8 +30,14 @@ const AppointmentForm = () => {
   const [form] = Form.useForm();
   const [formLayout, setFormLayout] = useState<LayoutType>("vertical");
 
-  const onFinish = (values: unknown) => {
+  const onFinish = async (values: unknown) => {
     console.log("Received values of form: ", values);
+    console.log(timeRange, date);
+
+    const slots = await getTimeSlots(timeRange[0], timeRange[1])
+    console.log(slots, timeRange[0], timeRange[1]);
+    const slotsInfo = slots.map((slot, i) => { return { id: i + 1, slot: slot, status: "available" } })
+    console.log(slotsInfo);
   };
 
   const onChange = (value: string) => {
@@ -35,8 +48,18 @@ const AppointmentForm = () => {
     console.log("search:", value);
   };
 
+
+
+
+
   const onDateChange: DatePickerProps["onChange"] = (date, dateString) => {
     console.log(date, dateString);
+    setDate(dateString);
+  };
+
+  const handleTimeRangeChange = (time: Dayjs, timeString: [string, string]) => {
+    console.log(time, timeString);
+    setTimeRange([timeString[0], timeString[1]]);
   };
 
   // Filter `option.label` match the user type `input`
@@ -59,7 +82,7 @@ const AppointmentForm = () => {
         // background: "red",
         color: "white !important",
         display: "grid",
-        placeItems: "center",
+        placeItems: "center ",
       }}
     >
       <Form
@@ -68,13 +91,14 @@ const AppointmentForm = () => {
         initialValues={{ layout: formLayout }}
         // onValuesChange={onFormLayoutChange}
         onFinish={onFinish}
-        style={{ width: "50%" }}
+        style={{ width: "30%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}
       >
         {" "}
         <h1>Create Appointment</h1>
         <Form.Item
-          name="Doctor Name"
+          name="DoctorName"
           label="Doctor Name"
+          style={{ width: "100%" }}
           rules={[{ required: true, message: "Please input Doctor Name!" }]}
         >
           <Input
@@ -86,6 +110,7 @@ const AppointmentForm = () => {
         <Form.Item
           name="Specialities"
           label="Specialities"
+          style={{ width: "100%" }}
           rules={[{ required: true, message: "Please input Doctor Name!" }]}
         >
           <Select
@@ -115,6 +140,7 @@ const AppointmentForm = () => {
         <Form.Item
           name="Date"
           label="Date of Appointment"
+          style={{ width: "100%" }}
           rules={[{ required: true, message: "Please input Date!" }]}
         >
           <DatePicker
@@ -123,13 +149,22 @@ const AppointmentForm = () => {
             onChange={onDateChange}
           />
         </Form.Item>
+
+
+
+
         <Form.Item
           name="Time"
           label="Time of Appointment"
+          style={{ width: "100%" }}
           rules={[{ required: true, message: "Please input Time!" }]}
         >
           <TimePicker.RangePicker
-            value={[timeRange[0], timeRange[1]]}
+            // defaultValue={[dayjs("00:00", "h:mm a"), dayjs("00:00", "h:mm a",)]}
+            value={[dayjs(timeRange[0]), dayjs(timeRange[1])]}
+            onChange={(values: RangeValue<Dayjs> | null, formatString: [string, string]) => handleTimeRangeChange(values?.[0] || dayjs(), formatString)}
+            use12Hours
+            format={"h:mm a"}
             style={{ width: "100%" }}
           />
         </Form.Item>
@@ -140,7 +175,7 @@ const AppointmentForm = () => {
           <Input placeholder="input placeholder" />
         </Form.Item> */}
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" size="large" >
             Submit
           </Button>
         </Form.Item>

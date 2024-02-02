@@ -1,5 +1,6 @@
 import "./App.css";
-import { Button, ConfigProvider, Space } from "antd";
+import { ConfigProvider } from "antd";
+import AppointmentList from "./components/AppointmentList";
 
 function App() {
   return (
@@ -16,10 +17,11 @@ function App() {
           },
         }}
       >
-        <Space>
+        {/* <Space>
           <Button type="primary">Primary</Button>
           <Button>Default</Button>
-        </Space>
+        </Space> */}
+        <AppointmentList />
       </ConfigProvider>
     </>
   );

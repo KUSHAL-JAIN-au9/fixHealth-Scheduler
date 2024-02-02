@@ -4,10 +4,12 @@ import App from "./App.tsx";
 import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import AppointmentForm from "./components/AppointmentForm.tsx";
+import PatientForm from "./components/PatientForm.tsx";
 
 const router = createBrowserRouter([
   { path: "/", element: <App /> },
   { path: "/create-appointment", element: <AppointmentForm /> },
+  { path: "/book-appointment", element: <PatientForm /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
