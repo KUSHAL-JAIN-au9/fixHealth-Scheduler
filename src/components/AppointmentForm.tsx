@@ -24,7 +24,7 @@ import Heading from "./Heading";
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 const AppointmentForm = () => {
-  const [name, setName] = useState<string>("");
+  const [, setName] = useState<string>("");
   const [allDoctors, setAllDoctors] = useState<string[]>([]);
   // const [filteredSpecialities, setfilteredSpecialities] = useState<string[]>([]);
   const [specialities, setSpecialities] = useState<string>("");
@@ -32,7 +32,7 @@ const AppointmentForm = () => {
   const [timeRange, setTimeRange] = useState<Array<string>>(["", ""]);
 
   const [form] = Form.useForm();
-  const [formLayout, setFormLayout] = useState<LayoutType>("vertical");
+  const [formLayout] = useState<LayoutType>("vertical");
 
   const { doctors: doctorData, updateDoctor: setDoctor } = useDoctorContext();
 

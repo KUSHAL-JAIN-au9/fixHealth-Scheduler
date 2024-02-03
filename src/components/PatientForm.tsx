@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Form, Input } from "antd"
+import { Form, Input } from "antd"
 import { useState } from "react";
 import FormItemLayout from "../layout/FormItemLayout";
 import Btn from "./Btn";
 import Heading from "./Heading";
-import Navbar from "./Navbar";
+
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 const PatientForm = () => {
-    const [name, setName] = useState<string>("");
-    const [phone, setPhone] = useState<number>();
+    const [name] = useState<string>("");
+    const [phone] = useState<number>();
 
     const [form] = Form.useForm();
     const [formLayout] = useState<LayoutType>("vertical");

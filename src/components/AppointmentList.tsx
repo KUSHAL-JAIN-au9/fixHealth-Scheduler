@@ -29,7 +29,7 @@ const AppointmentList = () => {
         setActionElements([...actionArray])
 
 
-    }, [view])
+    }, [navigate, view])
 
 
     return (
