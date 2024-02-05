@@ -167,3 +167,11 @@ li {
 .ant-btn-dangerous {
   box-shadow: none !important;
 }
+
+span {
+  display: block;
+}
+
+.ant-empty .ant-empty-description {
+  color: white !important;
+}

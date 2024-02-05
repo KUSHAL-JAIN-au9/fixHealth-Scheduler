@@ -3,6 +3,7 @@ import {
   DatePicker,
   DatePickerProps,
   Form,
+  Input,
   Select,
   TimePicker,
 } from "antd";
@@ -11,23 +12,37 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { RangeValue } from 'rc-picker/lib/interface'; // Import the RangeValue type
 import { getTimeSlots } from "../utils";
-import { getDoctors } from "../api";
+import { getDoctors, postData } from "../api";
 import { useDoctorContext } from "../context/doctorContext";
 import Btn from "./Btn";
 import FormItemLayout from "../layout/FormItemLayout";
 import Heading from "./Heading";
+import { useNavigate } from "react-router-dom";
 
 
 
-
+interface DoctorDeatils {
+  name: string,
+  specialities: string,
+  img: string,
+  city: string
+}
 
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 const AppointmentForm = () => {
-  const [, setName] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [doctoDetails, setDoctorDetails] = useState<DoctorDeatils>({
+    name: "",
+    specialities: "",
+    img: "",
+    city: ""
+  });
   const [allDoctors, setAllDoctors] = useState<string[]>([]);
   // const [filteredSpecialities, setfilteredSpecialities] = useState<string[]>([]);
   const [specialities, setSpecialities] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [img, setImg] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [timeRange, setTimeRange] = useState<Array<string>>(["", ""]);
 
@@ -36,7 +51,11 @@ const AppointmentForm = () => {
 
   const { doctors: doctorData, updateDoctor: setDoctor } = useDoctorContext();
 
-  console.log("doctors data", doctorData, allDoctors);
+  console.log("doctors data", img, city, specialities, doctoDetails, doctorData);
+  const navigate = useNavigate();
+  const onReset = () => {
+    form.resetFields();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,21 +77,56 @@ const AppointmentForm = () => {
 
 
   const onFinish = async (values: unknown) => {
+    // e.preventDefault();
     console.log("Received values of form: ", values);
-    console.log(timeRange, date);
+    // console.log(timeRange, date);
+    // console.log("doctoDetails", doctoDetails);
+
+    const doctor = doctorData.find((doctor: { name: string; }) => doctor.name === (values as { DoctorName: string })?.DoctorName)
+    console.log("doctorSpeciality", doctor);
 
     const slots = await getTimeSlots(timeRange[0], timeRange[1])
     console.log(slots, timeRange[0], timeRange[1]);
     const slotsInfo = slots.map((slot, i) => { return { id: i + 1, slot: slot, status: "available" } })
     console.log(slotsInfo);
+    const payload = {
+      doctor: (values as { DoctorName: string }).DoctorName,
+      specialities: doctor?.specialties,
+      date: date,
+      time: timeRange,
+      slots: slotsInfo,
+      img: doctor?.img,
+      city: doctor?.city,
+    }
+
+
+    try {
+      console.log("payload", payload);
+
+      const res = await postData(payload);
+      console.log("post res", res);
+      onReset();
+      navigate("/")
+
+    } catch (error) {
+      throw new Error("Error creating appointment");
+    }
+
+
+
   };
 
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
-    setName(value)
-    const doctorSpecialities = doctorData.find((doctor: { name: string; }) => doctor.name === value)?.specialties;
-    // console.log('specialties', doctorSpecialities);
-    setSpecialities(doctorSpecialities ?? "")
+    setName(value);
+    const doctorSpeciality = doctorData.find((doctor: { name: string; }) => doctor.name === value)?.specialties
+
+    setSpecialities(doctorSpeciality ?? "");
+    // const { specialities, img, city } = doctor as { name: string; specialities: string; img: string; city: string; };
+    // console.log('filteredDoctorDetails', doctor);
+    // setSpecialities(specialities);
+    // setCity(city);
+    // setImg(img);
   };
 
   const onSearch = (value: string) => {
@@ -111,6 +165,7 @@ const AppointmentForm = () => {
       className="form-container"
       layout={formLayout}
       form={form}
+
       initialValues={{ layout: formLayout }}
       // onValuesChange={onFormLayoutChange}
       onFinish={onFinish}
@@ -136,6 +191,39 @@ const AppointmentForm = () => {
           options={allDoctors.map((doctor) => ({ label: doctor, value: doctor }))}
         />
       </FormItemLayout>
+
+      <Form.Item
+        name="city"
+        label="city"
+        className="form-item"
+        hidden
+      >
+        <Input
+          // prefix={<UserOutlined className="site-form-item-icon" />}
+          value={doctoDetails.city}
+          defaultValue={doctoDetails.city}
+          placeholder="doctor city"
+          type="text"
+
+
+        />
+      </Form.Item>
+
+      <Form.Item
+        name="img"
+        label="img"
+        className="form-item"
+        hidden
+      >
+        <Input
+          // prefix={<UserOutlined className="site-form-item-icon" />}
+          value={doctoDetails.img}
+          defaultValue={doctoDetails.img}
+          placeholder="doctor image"
+          type="text"
+          hidden
+        />
+      </Form.Item>
 
       <FormItemLayout
         name="specialities"

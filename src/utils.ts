@@ -1,6 +1,7 @@
 // utils.ts
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { Appointments } from "./context/doctorContext";
 
 dayjs.extend(duration);
 
@@ -21,4 +22,45 @@ export async function getTimeSlots(
   }
 
   return slots;
+}
+
+export function filterDataByTime(data: Appointments[]) {
+  const morningData = data.filter((item) => {
+    return (
+      Array.isArray(item.time) &&
+      item.time.some((time) => {
+        const hour = parseInt(time.split(":")[0]);
+        const period = time.split(" ")[1];
+        return period === "am" && hour >= 5 && hour < 12;
+      })
+    );
+  });
+
+  const afternoonData = data.filter((item) => {
+    return (
+      Array.isArray(item.time) &&
+      item.time.some((time) => {
+        const hour = parseInt(time.split(":")[0]);
+        const period = time.split(" ")[1];
+        return period === "pm" && hour < 5;
+      })
+    );
+  });
+
+  const eveningData = data.filter((item) => {
+    return (
+      Array.isArray(item.time) &&
+      item.time.some((time) => {
+        const hour = parseInt(time.split(":")[0]);
+        const period = time.split(" ")[1];
+        return period === "pm" && hour >= 5;
+      })
+    );
+  });
+
+  return {
+    morning: morningData,
+    afternoon: afternoonData,
+    evening: eveningData,
+  };
 }

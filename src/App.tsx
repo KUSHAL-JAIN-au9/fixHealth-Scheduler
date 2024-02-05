@@ -3,12 +3,13 @@ import { ConfigProvider } from "antd";
 import AppointmentList from "./components/AppointmentList";
 import Navbar from "./components/Navbar";
 import { useState } from "react";
-import { ContextValue, DocContext, Doctor } from "./context/doctorContext";
+import { Appointments, ContextValue, DocContext, Doctor } from "./context/doctorContext";
 
 
 function App() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [view, setView] = useState<string>("")
+  const [appointments, setAppointments] = useState<Appointments[]>([]);
 
   const updateDoctor = (data: Doctor[]) => {
     setDoctors(data);
@@ -19,14 +20,19 @@ function App() {
     setView(view)
   };
 
+  const updateAppointments = (data: Appointments[]) => {
+    setAppointments(data);
+
+  };
+
   const contextValue: ContextValue = {
     doctors,
     view,
     updateView,
     updateDoctor,
-
+    updateAppointments,
+    appointments
   };
-
 
   return (
     <>

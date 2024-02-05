@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ContextValue, DocContext, Doctor } from "../context/doctorContext"
+import { Appointments, ContextValue, DocContext, Doctor } from "../context/doctorContext"
 import AppointmentForm from "../components/AppointmentForm";
 import FormContainerLayout from "../layout/FormContainerLayout";
 
@@ -7,10 +7,16 @@ import FormContainerLayout from "../layout/FormContainerLayout";
 
 const AddAppointmentPage = () => {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
+    const [appointments, setAppointments] = useState<Appointments[]>([]);
     const [view, setView] = useState<string>("")
 
     const updateDoctor = (data: Doctor[]) => {
         setDoctors(data);
+
+    };
+
+    const updateAppointments = (data: Appointments[]) => {
+        setAppointments(data);
 
     };
 
@@ -23,7 +29,8 @@ const AddAppointmentPage = () => {
         view,
         updateView,
         updateDoctor,
-
+        updateAppointments,
+        appointments
     };
     return (
 
