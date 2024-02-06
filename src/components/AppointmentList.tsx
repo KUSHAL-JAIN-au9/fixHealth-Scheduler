@@ -82,7 +82,8 @@ const AppointmentList = () => {
                 setAppointments(evening);
                 return;
             case "All": {
-
+                const isAllocatedAppointments = appointments?.filter((appointment: Appointments) => appointment?.isAllocated === false)
+                console.log("isAllocatedAppointments", isAllocatedAppointments);
                 setAppointments(appointments);
                 return;
             }
