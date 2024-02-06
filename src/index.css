@@ -175,3 +175,14 @@ span {
 .ant-empty .ant-empty-description {
   color: white !important;
 }
+
+@media (max-width: 768px) {
+  .appointment-list-filter-container {
+    flex-direction: column;
+    justify-content: center !important;
+    align-items: center;
+  }
+  .appointment-list-view-container button {
+    margin: 10px 0px 10px 0px;
+  }
+}

@@ -9,7 +9,7 @@ const Navbar = () => {
         <Header
             className='nav'
             style={{
-                position: 'fixed',
+                // position: 'fixed',
                 // top: 0,
                 zIndex: 1,
                 width: '100%',

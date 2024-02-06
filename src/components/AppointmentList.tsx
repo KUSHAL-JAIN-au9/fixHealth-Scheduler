@@ -7,19 +7,52 @@ import { useNavigate } from "react-router-dom"
 import AppointMentListContainer from "../pages/AppointMentListContainer"
 import { filterDataByTime } from "../utils"
 import { fetchData } from "../server/api.actions"
+import { putData } from "../api"
+
 
 
 
 const AppointmentList = () => {
-    const [actionElements, setActionElements] = useState<React.ReactNode[]>([])
+    const [, setActionElements] = useState<React.ReactNode[]>([])
     const [filteredappointments, setAppointments] = useState<Appointments[]>([]);
+    const [refresh, setRefresh] = useState<boolean>(false)
     const navigate = useNavigate();
     const { updateView, view, appointments, updateAppointments } = useDoctorContext();
     console.log("view", view, appointments);
 
-    const handleAllocate = () => {
-        console.log("handleAllocate");
+    const handleAllocate = async (id: string) => {
+
+
+        console.log("handleAllocate", id);
+        try {
+            const data = await putData(id, { isAllocated: true })
+            console.log("data", data);
+            setRefresh(!refresh)
+        } catch (error) {
+            console.log("error", error);
+        }
     }
+
+    useEffect(() => {
+
+
+        let actionArray: React.ReactNode = []
+        if (view === 'Patient View') {
+            const isNotAllocatedAppointments = appointments?.filter((appointment: Appointments) => appointment?.isAllocated)
+            console.log("is Not AllocatedAppointments", isNotAllocatedAppointments);
+            setAppointments(isNotAllocatedAppointments)
+            actionArray = [<Btn type="button" label="Enquiry" danger={true} />]
+        }
+        if (view === 'Sales Team View') {
+            const isAllocatedAppointments = appointments?.filter((appointment: Appointments) => appointment?.isAllocated === false)
+            console.log("isAllocatedAppointments", isAllocatedAppointments);
+            setAppointments(isAllocatedAppointments)
+            // actionArray = [<Button type="primary" size="large" htmlType="button" onClick={(e) => handleAllocate(e)} >Mark as Allocated</Button>]
+        }
+        if (view === 'Doctor View') setAppointments(appointments)
+        setActionElements([...actionArray]);
+
+    }, [navigate, view, updateAppointments, appointments])
 
     useEffect(() => {
         let data
@@ -30,23 +63,7 @@ const AppointmentList = () => {
             // console.log("isAllocatedAppointments", isNotAllocatedAppointments);
             setAppointments(data)
         })()
-
-        let actionArray: React.ReactNode = []
-        if (view === 'Patient View') {
-            // const isAllocatedAppointments = data?.filter((appointment: Appointments) => appointment?.isAllocated)
-            // console.log("isAllocatedAppointments", isAllocatedAppointments);
-            actionArray = [<Button type="primary" size="large" htmlType="button" onClick={() => navigate("/book-appointment")} >Book</Button>, <Btn type="button" label="Enquiry" danger={true} />]
-        }
-        if (view === 'Sales Team View') {
-            actionArray = [<Button type="primary" size="large" htmlType="button" onClick={handleAllocate} >Mark as Allocated</Button>]
-        }
-        setActionElements([...actionArray]);
-
-    }, [navigate, view])
-
-    useEffect(() => {
-
-    }, [updateAppointments])
+    }, [refresh])
 
 
     const handleTimings = async (value: string) => {
@@ -78,7 +95,7 @@ const AppointmentList = () => {
     return (
         <AppointMentListContainer>
             <h1 style={{ width: "100%", textAlign: "center" }}> Appointments </h1>
-            <div style={{ width: "90%", display: "flex", justifyContent: "space-between" }} >
+            <div className="appointment-list-filter-container" style={{ width: "90%", display: "flex", justifyContent: "space-between", alignItems: "center" }} >
                 <Select
                     style={{ width: 120 }}
                     placeholder="Filter Appointments"
@@ -92,13 +109,13 @@ const AppointmentList = () => {
                     ]}
                 />
 
-                <div>
-
-                    {view !== "Patient View" && <Button htmlType="button" type="primary" style={{ marginRight: "10px" }} onClick={() => navigate("create-appointment")} >{"ADD"}</Button>}
+                <div className="appointment-list-view-container">
+                    {view !== "Patient View" && <><Button htmlType="button" type="primary" style={{ marginRight: "10px" }} onClick={() => navigate("create-appointment")} >{"ADD"}</Button><Button htmlType="button" type="primary" style={{ marginRight: "10px" }} onClick={() => navigate("scheduler")} >{"View in Scheduler"}</Button></>}
                     <Select
                         style={{ width: 120, margin: "10px" }}
+                        className="appointment-list-view-select"
                         placeholder="select view"
-                        onChange={(value: string) => updateView(value)}
+                        onChange={(value: string) => value && updateView(value)}
                         options={[
                             { value: 'Patient View', label: 'Patient View' },
                             { value: 'Doctor View', label: 'Doctor View' },
@@ -107,7 +124,7 @@ const AppointmentList = () => {
                     />
                 </div>
             </div>
-            {Array.isArray(filteredappointments) && filteredappointments.length > 0 && < div style={{ width: "90%", minHeight: "30rem", margin: "16px", gap: 20, display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-around", alignItems: "center", overflowY: "auto" }}>
+            {Array.isArray(filteredappointments) && filteredappointments.length > 0 && < div style={{ width: "90%", minHeight: "30rem", margin: "16px", gap: 20, display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", alignItems: "center", overflowY: "auto" }}>
                 {
                     filteredappointments?.map((appointment, index) => {
                         return (<Card
@@ -124,16 +141,18 @@ const AppointmentList = () => {
                                 </div>
                             }
 
-                            actions={[...actionElements]}
+                        // actions={[...actionElements]}
                         >
                             <Meta
 
-                                title={appointment?.doctor}
+                                title={view !== "Patient View" && appointment?.doctor}
                                 description={<>
                                     <span>{appointment?.date}  </span >
                                     <span >{appointment?.time[0] + " to " + appointment?.time[1]}</span >
                                 </>}
                             />
+                            {view === "Sales Team View" && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={() => handleAllocate(appointment?._id)} >Mark as Allocated</Button></div>}
+                            {view === "Patient View" && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={() => navigate("/book-appointment", { state: appointment })} >Book</Button></div>}
                         </Card>)
                     })
                 }

@@ -4,6 +4,9 @@ import { useState } from "react";
 import FormItemLayout from "../layout/FormItemLayout";
 import Btn from "./Btn";
 import Heading from "./Heading";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { deleteAppointment, postBooking, putData } from "../api";
+import { AnyObject } from "antd/es/_util/type";
 
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
@@ -14,8 +17,48 @@ const PatientForm = () => {
     const [form] = Form.useForm();
     const [formLayout] = useState<LayoutType>("vertical");
 
-    const onFinish = async (values: unknown) => {
+    const { state } = useLocation();
+    const navigate = useNavigate();
+    // console.log("location", state);
+
+    const onReset = () => {
+        form.resetFields();
+    };
+
+    const onFinish = async (values: AnyObject) => {
         console.log("Received values of form: ", values);
+        console.log(state._id);
+
+        const payload = {
+            patientName: values.PatientName,
+            phone: values.phone,
+            email: values.email,
+            appointment: state._id
+        }
+
+        console.log("payload", payload);
+        try {
+            const data = await postBooking(payload)
+            console.log(data);
+            const findSlots = state.slots.filter((slot: any) => slot.status === "available")
+            if (findSlots.length === 0) {
+                alert("No slots available")
+                return
+            }
+            if (findSlots.length === 1) {
+                const res = await deleteAppointment(state._id)
+                console.log("res deleted", res);
+            }
+            findSlots[0].status = "booked"
+            console.log("findSlots", findSlots);
+            const putstatus = await putData(state._id, { slots: findSlots })
+            console.log(putstatus);
+            onReset()
+            alert("Booking Successful")
+            navigate("/")
+        } catch (error) {
+            console.log("error", error)
+        }
 
     };
 

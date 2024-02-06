@@ -58,3 +58,66 @@ export const postData = async (data: any): Promise<any> => {
     console.error("Error posting data:", error);
   }
 };
+
+export const putData = async (id: string, data: any): Promise<any> => {
+  try {
+    const response = await fetch(`${BASE_URL}/appointments/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log("Response Data:", responseData);
+    return responseData;
+  } catch (error: any) {
+    console.error("Error updating data:", error);
+  }
+};
+
+export const postBooking = async (bookingData: any): Promise<any> => {
+  try {
+    const response = await fetch(`${BASE_URL}/bookings`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bookingData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log("Response Data:", responseData);
+    return responseData;
+  } catch (error: any) {
+    console.error("Error posting booking data:", error);
+  }
+};
+
+//delete booking
+export const deleteAppointment = async (id: string): Promise<any> => {
+  try {
+    const response = await fetch(`${BASE_URL}/appointments/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log("Response Data:", responseData);
+    return responseData;
+  } catch (error: any) {
+    console.error("Error deleting booking:", error);
+  }
+};

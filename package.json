@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aldabil/react-scheduler": "^2.8.2",
+    "@bitnoi.se/react-scheduler": "^0.1.5",
+    "@syncfusion/ej2-react-schedule": "^24.2.4",
     "antd": "^5.13.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

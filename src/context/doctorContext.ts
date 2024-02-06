@@ -7,6 +7,8 @@ export interface Doctor {
   city: string;
 }
 export interface Appointments {
+  _id: string;
+  id: unknown;
   img: string;
   doctor: string;
   specialties: string;
@@ -18,11 +20,11 @@ export interface Appointments {
 }
 
 export interface ContextValue {
-  doctors: Doctor[];
-  updateDoctor: (newValue: Doctor[]) => void;
+  doctors: Doctor[] | undefined;
+  updateDoctor: (newValue: Doctor[]) => void | undefined;
   updateAppointments: (newValue: Appointments[]) => void;
-  view: string;
-  updateView: (view: string) => void;
+  view: string | undefined;
+  updateView: (view: string) => void | undefined;
   appointments: Appointments[];
 }
 export const DocContext = createContext<ContextValue | undefined>(undefined);

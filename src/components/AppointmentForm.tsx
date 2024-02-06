@@ -31,8 +31,8 @@ interface DoctorDeatils {
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 const AppointmentForm = () => {
-  const [name, setName] = useState<string>("");
-  const [doctoDetails, setDoctorDetails] = useState<DoctorDeatils>({
+  const [, setName] = useState<string>("");
+  const [doctoDetails] = useState<DoctorDeatils>({
     name: "",
     specialities: "",
     img: "",
@@ -41,8 +41,8 @@ const AppointmentForm = () => {
   const [allDoctors, setAllDoctors] = useState<string[]>([]);
   // const [filteredSpecialities, setfilteredSpecialities] = useState<string[]>([]);
   const [specialities, setSpecialities] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [img, setImg] = useState<string>("");
+  const [city] = useState<string>("");
+  const [img] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [timeRange, setTimeRange] = useState<Array<string>>(["", ""]);
 
@@ -62,9 +62,11 @@ const AppointmentForm = () => {
       try {
         const res = await getDoctors();
         console.log("api data", res);
-        setDoctor(res); // Assuming res is of type Doctor[]
-        const doctors = res.map((doctor: { name: string; }) => doctor.name);
-        setAllDoctors([...doctors])
+        if (res) {
+          setDoctor(res); // Assuming res is of type Doctor[]
+          const doctors = res.map((doctor: { name: string; }) => doctor.name);
+          setAllDoctors([...doctors])
+        }
         return res; // Return the data to fulfill the promise
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -82,7 +84,7 @@ const AppointmentForm = () => {
     // console.log(timeRange, date);
     // console.log("doctoDetails", doctoDetails);
 
-    const doctor = doctorData.find((doctor: { name: string; }) => doctor.name === (values as { DoctorName: string })?.DoctorName)
+    const doctor = doctorData?.find((doctor: { name: string; }) => doctor.name === (values as { DoctorName: string })?.DoctorName)
     console.log("doctorSpeciality", doctor);
 
     const slots = await getTimeSlots(timeRange[0], timeRange[1])
@@ -106,6 +108,7 @@ const AppointmentForm = () => {
       const res = await postData(payload);
       console.log("post res", res);
       onReset();
+      alert("Appointment added Successful")
       navigate("/")
 
     } catch (error) {
@@ -119,7 +122,7 @@ const AppointmentForm = () => {
   const onChange = (value: string) => {
     console.log(`selected ${value}`);
     setName(value);
-    const doctorSpeciality = doctorData.find((doctor: { name: string; }) => doctor.name === value)?.specialties
+    const doctorSpeciality = doctorData?.find((doctor: { name: string; }) => doctor.name === value)?.specialties
 
     setSpecialities(doctorSpeciality ?? "");
     // const { specialities, img, city } = doctor as { name: string; specialities: string; img: string; city: string; };
