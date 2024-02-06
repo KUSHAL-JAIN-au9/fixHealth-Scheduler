@@ -4,7 +4,7 @@ import { useState } from "react";
 import FormItemLayout from "../layout/FormItemLayout";
 import Btn from "./Btn";
 import Heading from "./Heading";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { deleteAppointment, postBooking, putData } from "../api";
 import { AnyObject } from "antd/es/_util/type";
 
