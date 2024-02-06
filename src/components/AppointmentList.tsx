@@ -16,6 +16,7 @@ const AppointmentList = () => {
     const [, setActionElements] = useState<React.ReactNode[]>([])
     const [filteredappointments, setAppointments] = useState<Appointments[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false)
+    const [timing, setTiming] = useState<string>("")
     const navigate = useNavigate();
     const { updateView, view, appointments, updateAppointments } = useDoctorContext();
     console.log("view", view, appointments);
@@ -52,7 +53,7 @@ const AppointmentList = () => {
         if (view === 'Doctor View') setAppointments(appointments)
         setActionElements([...actionArray]);
 
-    }, [navigate, view, updateAppointments, appointments])
+    }, [navigate, view])
 
     useEffect(() => {
         let data
@@ -69,6 +70,7 @@ const AppointmentList = () => {
     const handleTimings = async (value: string) => {
         console.log("handleTimings value", value);
         const { morning, afternoon, evening } = filterDataByTime(appointments)
+        setTiming(value)
 
         console.log("morning", morning, afternoon, evening);
         switch (value) {
@@ -79,6 +81,13 @@ const AppointmentList = () => {
                 setAppointments(afternoon);
                 return;
             case "Evening":
+
+                // console.log("isAllocatedAppointments", isAllocatedAppointments);
+                if (view === "Sales Team View") {
+                    const isAllocatedAppointments = evening?.filter((appointment: Appointments) => appointment?.isAllocated === false)
+                    setAppointments(isAllocatedAppointments);
+                    return;
+                }
                 setAppointments(evening);
                 return;
             case "All": {
@@ -99,6 +108,7 @@ const AppointmentList = () => {
             <div className="appointment-list-filter-container" style={{ width: "90%", display: "flex", justifyContent: "space-between", alignItems: "center" }} >
                 <Select
                     style={{ width: 120 }}
+                    value={timing}
                     placeholder="Filter Appointments"
                     onChange={handleTimings}
                     options={[
@@ -152,7 +162,7 @@ const AppointmentList = () => {
                                     <span >{appointment?.time[0] + " to " + appointment?.time[1]}</span >
                                 </>}
                             />
-                            {view === "Sales Team View" && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={() => handleAllocate(appointment?._id)} >Mark as Allocated</Button></div>}
+                            {view === "Sales Team View" && !appointment.isAllocated && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={() => handleAllocate(appointment?._id)} >Mark as Allocated</Button></div>}
                             {view === "Patient View" && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={() => navigate("/book-appointment", { state: appointment })} >Book</Button></div>}
                         </Card>)
                     })
