@@ -8,7 +8,7 @@ import { Appointments, ContextValue, DocContext, Doctor } from "./context/doctor
 
 function App() {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [view, setView] = useState<string>("")
+  const [view, setView] = useState<string>("Patient View")
   const [appointments, setAppointments] = useState<Appointments[]>([]);
 
   const updateDoctor = (data: Doctor[]) => {
