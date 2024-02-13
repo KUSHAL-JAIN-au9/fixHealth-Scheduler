@@ -10,6 +10,9 @@ import { fetchData } from "../server/api.actions"
 import { putData } from "../api"
 
 
+// const customWeekStartEndFormat = (value) =>
+//     `${dayjs(value).startOf('isoWeek').format(weekFormat)} ~ ${dayjs(value).endOf('isoWeek').subtract(1, 'day').format(weekFormat)}`;
+
 
 
 const AppointmentList = () => {
