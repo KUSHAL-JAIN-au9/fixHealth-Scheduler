@@ -8,6 +8,7 @@ import AppointMentListContainer from "../pages/AppointMentListContainer"
 import { filterDataByTime } from "../utils"
 import { fetchData } from "../server/api.actions"
 import { putData } from "../api"
+import { currentWeek } from "../data"
 
 
 // const customWeekStartEndFormat = (value) =>
@@ -130,10 +131,11 @@ const AppointmentList = () => {
 
     }
 
-    console.log("filterAppointments", filteredappointments);
+    // console.log("filterAppointments", filteredappointments);
+    console.log("current week", currentWeek);
     return (
         <AppointMentListContainer>
-            <h1 className="heading" style={{ width: "100%", textAlign: "center" }}> Appointments </h1>
+            <h1 className="heading" style={{ width: "100%", textAlign: "center" }}> Slots </h1>
             <div className="appointment-list-filter-container" style={{ width: "90%", display: "flex", justifyContent: "space-between", alignItems: "center" }} >
                 <Select
                     style={{ width: 120 }}
@@ -151,7 +153,12 @@ const AppointmentList = () => {
                 />
 
                 <div className="appointment-list-view-container">
-                    {view !== "Patient View" && view !== "" && <><Button htmlType="button" type="primary" style={{ marginRight: "10px" }} onClick={() => navigate("create-appointment")} >{"ADD"}</Button><Button htmlType="button" type="primary" style={{ marginRight: "10px" }} onClick={() => navigate("scheduler")} >{"View in Scheduler"}</Button></>}
+                    {view !== "Patient View" && view !== "" &&
+                        <>
+                            {/* {currentWeek === "Sunday" &&  */}
+                            <Button htmlType="button" type="primary" style={{ marginRight: "10px" }} onClick={() => navigate("create-appointment")} >{"ADD"}</Button>
+                            {/* } */}
+                            <Button htmlType="button" type="primary" style={{ marginRight: "10px" }} onClick={() => navigate("scheduler")} >{"View in Scheduler"}</Button></>}
                     <Select
                         style={{ width: 120, margin: "10px" }}
                         className="appointment-list-view-select"
@@ -189,8 +196,9 @@ const AppointmentList = () => {
 
                                 title={view !== "Patient View" && appointment?.doctor}
                                 description={<>
-                                    <span><strong>Speciality:</strong> {appointment?.specialties}  </span >
+                                    <span><strong>Speciality:</strong> {appointment?.specialities}  </span >
                                     <span><strong>Date:</strong> {appointment?.date}  </span >
+                                    <span><strong>available week :</strong> {appointment?.week}  </span >
                                     <span ><strong>Timings:</strong> {appointment?.time[0] + " to " + appointment?.time[1]}</span >
                                 </>}
                             />

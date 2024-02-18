@@ -8,7 +8,7 @@ import {
   TimePicker,
 } from "antd";
 import { useEffect, useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs, { Dayjs, OpUnitType } from "dayjs";
 
 import { RangeValue } from 'rc-picker/lib/interface'; // Import the RangeValue type
 import { getTimeSlots } from "../utils";
@@ -18,7 +18,9 @@ import Btn from "./Btn";
 import FormItemLayout from "../layout/FormItemLayout";
 import Heading from "./Heading";
 import { useNavigate } from "react-router-dom";
+import { dateFormat, weekFormat } from "../data";
 
+import isoWeek from 'dayjs/plugin/isoWeek';
 
 
 interface DoctorDeatils {
@@ -28,6 +30,18 @@ interface DoctorDeatils {
   city: string
 }
 
+// Extend dayjs with the isoWeek plugin
+dayjs.extend(isoWeek);
+
+//  Define the function to get the Monday of the week for a given date string
+const getMondayOfWeekRange = (dateString: string) => {
+  const date = dayjs(dateString.split(' ~ ')[0], weekFormat);
+  const monday = date.startOf('week');
+  return monday.format(dateFormat);
+};
+
+const customWeekStartEndFormat: DatePickerProps['format'] = (value) =>
+  `${dayjs(value).startOf('isoWeek' as OpUnitType).format(weekFormat)} ~ ${dayjs(value).endOf('isoWeek' as OpUnitType).subtract(1, 'day').format(weekFormat)}`;
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 const AppointmentForm = () => {
@@ -44,6 +58,7 @@ const AppointmentForm = () => {
   const [city] = useState<string>("");
   const [img] = useState<string>("");
   const [date, setDate] = useState<string>("");
+  const [week, setWeek] = useState<string>("");
   const [timeRange, setTimeRange] = useState<Array<string>>(["", ""]);
 
   const [form] = Form.useForm();
@@ -93,12 +108,13 @@ const AppointmentForm = () => {
     console.log(slotsInfo);
     const payload = {
       doctor: (values as { DoctorName: string }).DoctorName,
-      specialities: doctor?.specialties,
+      specialities: doctor?.specialties || specialities,
       date: date,
       time: timeRange,
       slots: slotsInfo,
       img: doctor?.img,
       city: doctor?.city,
+      week: week
     }
 
 
@@ -108,6 +124,7 @@ const AppointmentForm = () => {
       const res = await postData(payload);
       console.log("post res", res);
       onReset();
+      setWeek("");
       alert("Appointment added Successful")
       navigate("/")
 
@@ -142,7 +159,11 @@ const AppointmentForm = () => {
 
   const onDateChange: DatePickerProps["onChange"] = (date, dateString) => {
     console.log(date, dateString);
-    setDate(dateString);
+
+    const monday = getMondayOfWeekRange(dateString);
+    console.log("monday", monday); // Outputs the date of the Monday of the current week
+    setDate(monday);
+    setWeek(dateString);
   };
 
   const handleTimeRangeChange = (time: Dayjs, timeString: [string, string]) => {
@@ -245,7 +266,7 @@ const AppointmentForm = () => {
         />
 
       </FormItemLayout>
-
+      {/* 
       <FormItemLayout
         name="Date"
         label="Date of appointment"
@@ -255,6 +276,24 @@ const AppointmentForm = () => {
           value={dayjs(date)} // Convert the date string to a Dayjs object
           onChange={onDateChange}
           style={{ width: "100%" }}
+        />
+      </FormItemLayout> */}
+
+
+      <FormItemLayout
+        name="Week"
+        label="Week of availability"
+        message="Please select a Week of availability!"
+
+      >
+        <DatePicker
+          style={{ width: "100%" }}
+          placeholder="Select week"
+          value={dayjs(week, weekFormat)}
+          // defaultValue={dayjs()}
+          format={customWeekStartEndFormat}
+          picker="week"
+          onChange={onDateChange}
         />
       </FormItemLayout>
 

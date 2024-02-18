@@ -25,6 +25,7 @@ const Scheduler = () => {
                     Subject: `Dr.${appointment.doctor}'s Appointment`,
                     StartTime: new Date(`${appointment.date} ${appointment.time[0]}`),
                     EndTime: new Date(`${appointment.date} ${appointment.time[1]}`),
+                    RecurrenceRule: 'FREQ=DAILY;INTERVAL=1;COUNT=7'
                 }
             })
             // console.log("refactoredAppointmentData", refactoredAppointmentData);
@@ -44,7 +45,10 @@ const Scheduler = () => {
             eventSettings={{
                 dataSource: scheduleData,
                 allowAdding: false,
-                allowEditing: false
+                allowEditing: false,
+                allowDeleting: false
+
+
             }}
         >
             <Inject services={[Day, Week, WorkWeek, Month]} />

@@ -11,12 +11,13 @@ export interface Appointments {
   id: unknown;
   img: string;
   doctor: string;
-  specialties: string;
+  specialities: string;
   city: string;
   slots: string[];
   date: string;
   time: string;
   isAllocated: boolean;
+  week: string;
 }
 
 export interface ContextValue {

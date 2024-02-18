@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+
 export const appointments = [
   {
     id: 1,
@@ -518,5 +521,13 @@ export const appointments = [
       },
     ],
   },
-  // Add more objects as needed
 ];
+
+export const weekFormat = "MM/DD";
+export const dateFormat = "YYYY/MM/DD";
+
+// Extend dayjs with the weekOfYear plugin
+dayjs.extend(weekOfYear);
+
+// Get the current week of the year
+export const currentWeek = dayjs().format("dddd");
