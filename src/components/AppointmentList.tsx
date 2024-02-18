@@ -173,7 +173,7 @@ const AppointmentList = () => {
                     />
                 </div>
             </div>
-            {Array.isArray(filteredappointments) && filteredappointments.length > 0 && < div style={{ width: "90%", minHeight: "30rem", margin: "16px", gap: 20, display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", alignItems: "center", overflowY: "auto" }}>
+            {Array.isArray(filteredappointments) && filteredappointments.length > 0 && < div className="appointment-card-container" style={{ width: "90%", minHeight: "30rem", margin: "16px", gap: 20, display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-start", alignItems: "center", overflowY: "auto" }}>
                 {
                     filteredappointments?.map((appointment, index) => {
                         return (<Card

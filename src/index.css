@@ -187,4 +187,14 @@ span {
   .appointment-list-view-container button {
     margin: 10px 0px 10px 0px;
   }
+
+  .appointment-card-container {
+    justify-content: center !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .appointment-card-container {
+    justify-content: center !important;
+  }
 }

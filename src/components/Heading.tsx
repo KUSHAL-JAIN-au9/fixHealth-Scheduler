@@ -2,7 +2,7 @@
 
 const Heading = ({ label }: { label: string }) => {
     return (
-        <h1 className="heading"> {`${label} Appointment`}</h1>
+        <h1 className="heading"> {`${label} Slots`}</h1>
     )
 }
 

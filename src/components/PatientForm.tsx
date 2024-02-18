@@ -104,7 +104,7 @@ const PatientForm = () => {
                 </Form.Item> */}
             <FormItemLayout
                 name="phone"
-                label=" mobile number"
+                label=" Mobile number"
                 message="Please input your mobile number!"
             >
                 <Input
@@ -140,7 +140,7 @@ const PatientForm = () => {
 
             <FormItemLayout
                 name="email"
-                label=" email"
+                label="Email"
                 message="Please input your email!">
                 <Input
                     // prefix={<UserOutlined className="site-form-item-icon" />}
