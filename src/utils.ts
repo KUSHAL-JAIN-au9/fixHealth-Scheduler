@@ -5,6 +5,18 @@ import { Appointments } from "./context/doctorContext";
 
 dayjs.extend(duration);
 
+export interface Slots {
+  id: number;
+  slot: string;
+  status: string;
+}
+
+export interface DateSlots {
+  id: number;
+  date: string;
+  slots: Slots[];
+}
+
 export async function getTimeSlots(
   start: string,
   end: string
@@ -64,3 +76,33 @@ export function filterDataByTime(data: Appointments[]) {
     evening: eveningData,
   };
 }
+
+// function to create appointment objects for the week
+export const createAppointmentObjects = async (
+  weekRange: string,
+  slots: string[] = []
+) => {
+  // Split the week range into start and end dates
+  const [start, end] = weekRange
+    .split(" ~ ")
+    .map((date) => dayjs(date, "MM/DD"));
+
+  // Generate the dates in the week range
+  const dates = [];
+  for (
+    let date = start;
+    date.isBefore(end) || date.isSame(end);
+    date = date.add(1, "day")
+  ) {
+    dates.push(date.format("YYYY-MM-DD"));
+  }
+
+  // Map over the dates to create the objects
+  const dateSlots = dates.map((date, i) => ({
+    id: i + 1,
+    date,
+    slots: slots.map((slot) => ({ id: i + 1, slot, status: "available" })),
+  }));
+
+  return { dateSlots, dates };
+};

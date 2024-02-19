@@ -1,25 +1,37 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Form, Input } from "antd"
-import { useState } from "react";
+import { Form, Input, Select } from "antd"
+import { useEffect, useState } from "react";
 import FormItemLayout from "../layout/FormItemLayout";
 import Btn from "./Btn";
 import Heading from "./Heading";
 import { useLocation, useNavigate } from "react-router-dom";
 import { deleteAppointment, postBooking, putData } from "../api";
 import { AnyObject } from "antd/es/_util/type";
+import { DateSlots, Slots, createAppointmentObjects } from "../utils";
+import { filterOption, onSearch } from "../constants";
 
 
 type LayoutType = Parameters<typeof Form>[0]["layout"];
 const PatientForm = () => {
     const [name] = useState<string>("");
     const [phone] = useState<number>();
+    const [date, setDate] = useState<string>("")
+    const [slotDates, setSlotDates] = useState<string[]>([])
 
     const [form] = Form.useForm();
     const [formLayout] = useState<LayoutType>("vertical");
 
     const { state } = useLocation();
     const navigate = useNavigate();
-    // console.log("location", state);
+    console.log("location", state);
+
+    useEffect(() => {
+        (async () => {
+            const { dates } = await createAppointmentObjects(state?.week)
+            console.log("weekDates", dates);
+            setSlotDates(dates);
+        })();
+    }, [])
 
     const onReset = () => {
         form.resetFields();
@@ -33,25 +45,29 @@ const PatientForm = () => {
             patientName: values.PatientName,
             phone: values.phone,
             email: values.email,
-            appointment: state._id
+            appointment: state._id,
+            date: date
         }
 
         console.log("payload", payload);
         try {
             const data = await postBooking(payload)
             console.log(data);
-            const findSlots = state.slots.filter((slot: any) => slot.status === "available")
+            const slotObj = state.slots.find((slot: DateSlots) => slot.date === date)
+            const findSlots = slotObj.slots.filter((slot: Slots) => slot.status === "available")
+            console.log("findSlots", findSlots);
             if (findSlots.length === 0) {
                 alert("No slots available")
                 return
             }
             if (findSlots.length === 1) {
-                const res = await deleteAppointment(state._id)
-                console.log("res deleted", res);
+                // const res = await deleteAppointment(state._id)
+                // console.log("res deleted", res);
+                alert("No slots available at  the day please select another day")
             }
             findSlots[0].status = "booked"
-            console.log("findSlots", findSlots);
-            const putstatus = await putData(state._id, { slots: findSlots })
+            console.log("findSlots all object", { slots: [...state.slots] });
+            const putstatus = await putData(state._id, { slots: [...state.slots] })
             console.log(putstatus);
             onReset()
             alert("Booking Successful")
@@ -61,6 +77,11 @@ const PatientForm = () => {
         }
 
     };
+
+    const handleChangeDate = (value: string) => {
+        console.log(`selected ${value}`);
+        setDate(value)
+    }
 
 
     return (
@@ -149,6 +170,24 @@ const PatientForm = () => {
                     type="email"
 
                 />
+            </FormItemLayout>
+
+            <FormItemLayout
+                name="bookingDate"
+                label="Booking Date"
+                message="Please select a date!"
+            >
+                <Select
+                    showSearch
+                    value={date}
+                    placeholder="Select a date"
+                    optionFilterProp="children"
+                    onChange={handleChangeDate}
+                    onSearch={onSearch}
+                    filterOption={filterOption}
+                    options={slotDates.map((date) => ({ label: date, value: date }))}
+                />
+
             </FormItemLayout>
 
             {/* <Form.Item

@@ -1,6 +1,5 @@
 import { Button, Card, Empty, Select } from "antd"
 import Meta from "antd/es/card/Meta"
-import Btn from "./Btn"
 import { Appointments, useDoctorContext } from "../context/doctorContext"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -17,7 +16,6 @@ import { currentWeek } from "../data"
 
 
 const AppointmentList = () => {
-    const [, setActionElements] = useState<React.ReactNode[]>([])
     const [filteredappointments, setAppointments] = useState<Appointments[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false)
     const [, setTiming] = useState<string>("")
@@ -40,13 +38,11 @@ const AppointmentList = () => {
 
     useEffect(() => {
 
-
-        let actionArray: React.ReactNode = []
         if (view === 'Patient View') {
             const isNotAllocatedAppointments = appointments?.filter((appointment: Appointments) => appointment?.isAllocated)
-            console.log("is  AllocatedAppointments", isNotAllocatedAppointments);
+            console.log("is Not  AllocatedAppointments", isNotAllocatedAppointments);
             setAppointments(isNotAllocatedAppointments)
-            actionArray = [<Btn type="button" label="Enquiry" danger={true} />]
+            // actionArray = [<Btn type="button" label="Enquiry" danger={true} />]
         }
         if (view === 'Sales Team View') {
             const isAllocatedAppointments = appointments?.filter((appointment: Appointments) => appointment?.isAllocated === false)
@@ -55,9 +51,9 @@ const AppointmentList = () => {
             // actionArray = [<Button type="primary" size="large" htmlType="button" onClick={(e) => handleAllocate(e)} >Mark as Allocated</Button>]
         }
         if (view === 'Doctor View') setAppointments(appointments)
-        setActionElements([...actionArray]);
+        // setActionElements([...actionArray]);
 
-    }, [navigate, view])
+    }, [navigate, view, refresh])
 
     useEffect(() => {
         let data
@@ -66,7 +62,23 @@ const AppointmentList = () => {
             updateAppointments(data)
             // const isNotAllocatedAppointments = data.filter((appointment: Appointments) => appointment?.isAllocated)
             // console.log("isAllocatedAppointments", isNotAllocatedAppointments);
-            setAppointments(data)
+            if (view === 'Patient View') {
+                const isNotAllocatedAppointments = data?.filter((appointment: Appointments) => appointment?.isAllocated)
+                console.log("is Not  AllocatedAppointments", isNotAllocatedAppointments);
+                setAppointments(isNotAllocatedAppointments)
+
+            }
+
+            if (view === 'Sales Team View') {
+                const isAllocatedAppointments = data?.filter((appointment: Appointments) => appointment?.isAllocated === false)
+                console.log("isAllocatedAppointments", isAllocatedAppointments);
+                setAppointments(isAllocatedAppointments)
+
+                // actionArray = [<Button type="primary" size="large" htmlType="button" onClick={(e) => handleAllocate(e)} >Mark as Allocated</Button>]
+            }
+            // setAppointments(data)
+
+
         })()
     }, [refresh])
 

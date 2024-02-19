@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import dayjs, { Dayjs, OpUnitType } from "dayjs";
 
 import { RangeValue } from 'rc-picker/lib/interface'; // Import the RangeValue type
-import { getTimeSlots } from "../utils";
+import { createAppointmentObjects, getTimeSlots } from "../utils";
 import { getDoctors, postData } from "../api";
 import { useDoctorContext } from "../context/doctorContext";
 import Btn from "./Btn";
@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { dateFormat, weekFormat } from "../data";
 
 import isoWeek from 'dayjs/plugin/isoWeek';
+import { filterOption, onSearch } from "../constants";
 
 
 interface DoctorDeatils {
@@ -102,22 +103,25 @@ const AppointmentForm = () => {
     const doctor = doctorData?.find((doctor: { name: string; }) => doctor.name === (values as { DoctorName: string })?.DoctorName)
     console.log("doctorSpeciality", doctor);
 
-    const slots = await getTimeSlots(timeRange[0], timeRange[1])
-    console.log(slots, timeRange[0], timeRange[1]);
-    const slotsInfo = slots.map((slot, i) => { return { id: i + 1, slot: slot, status: "available" } })
-    console.log(slotsInfo);
+    const slots: string[] = await getTimeSlots(timeRange[0], timeRange[1])
+    // console.log(slots, timeRange[0], timeRange[1]);
+    // const slotsInfo = slots.map((slot, i) => { return { id: i + 1, slot: slot, status: "available" } })
+    // console.log(slotsInfo);
+    const { dateSlots } = await createAppointmentObjects(week, slots)
+    console.log("slots info", dateSlots);
+
     const payload = {
       doctor: (values as { DoctorName: string }).DoctorName,
       specialities: doctor?.specialties || specialities,
       date: date,
       time: timeRange,
-      slots: slotsInfo,
+      slots: dateSlots,
       img: doctor?.img,
       city: doctor?.city,
       week: week
     }
 
-
+    console.log("payload", payload);
     try {
       console.log("payload", payload);
 
@@ -149,9 +153,7 @@ const AppointmentForm = () => {
     // setImg(img);
   };
 
-  const onSearch = (value: string) => {
-    console.log("search:", value);
-  };
+
 
 
 
@@ -171,17 +173,9 @@ const AppointmentForm = () => {
     setTimeRange([timeString[0], timeString[1]]);
   };
 
-  // Filter `option.label` match the user type `input`
-  const filterOption = (
-    input: string,
-    option?: { label: string; value: string }
-  ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
-  //   function dayjs(
-  //     arg0: string
-  //   ): import("rc-picker/lib/interface").EventValue<import("dayjs").Dayjs> {
-  //     throw new Error("Function not implemented.");
-  //   }
+
+
 
   return (
 

@@ -25,7 +25,7 @@ const Scheduler = () => {
                     Subject: `Dr.${appointment.doctor}'s Appointment`,
                     StartTime: new Date(`${appointment.date} ${appointment.time[0]}`),
                     EndTime: new Date(`${appointment.date} ${appointment.time[1]}`),
-                    RecurrenceRule: 'FREQ=DAILY;INTERVAL=1;COUNT=7'
+                    RecurrenceRule: 'FREQ=DAILY;INTERVAL=1;COUNT=6;BYDAY=MO,TU,WE,TH,FR,SA'
                 }
             })
             // console.log("refactoredAppointmentData", refactoredAppointmentData);
