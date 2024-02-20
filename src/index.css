@@ -205,7 +205,9 @@ span {
 }
 
 :where(.css-dev-only-do-not-override-1b0bdye).ant-modal-confirm
-  .ant-modal-confirm-title {
+  .ant-modal-confirm-title,
+:where(.css-1b0bdye).ant-modal-confirm .ant-modal-confirm-title,
+.modal-title {
   color: white !important;
 }
 

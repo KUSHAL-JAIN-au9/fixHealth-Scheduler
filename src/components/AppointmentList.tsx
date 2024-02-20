@@ -29,7 +29,7 @@ const AppointmentList = () => {
 
     const handleSlotAllocation = (id: string) => {
         confirm({
-            title: 'Do you want to allocate this slot ?',
+            title: <span className="modal-title">'Do you want to allocate this slot ?'</span>,
             icon: <ExclamationCircleFilled />,
             content: <TextArea
                 className="remarks-input"
