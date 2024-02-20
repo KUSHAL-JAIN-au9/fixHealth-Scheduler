@@ -5,7 +5,7 @@ import FormItemLayout from "../layout/FormItemLayout";
 import Btn from "./Btn";
 import Heading from "./Heading";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteAppointment, postBooking, putData } from "../api";
+import { postBooking, putData } from "../api";
 import { AnyObject } from "antd/es/_util/type";
 import { DateSlots, Slots, createAppointmentObjects } from "../utils";
 import { filterOption, onSearch } from "../constants";
@@ -61,8 +61,7 @@ const PatientForm = () => {
                 return
             }
             if (findSlots.length === 1) {
-                // const res = await deleteAppointment(state._id)
-                // console.log("res deleted", res);
+
                 alert("No slots available at  the day please select another day")
             }
             findSlots[0].status = "booked"
