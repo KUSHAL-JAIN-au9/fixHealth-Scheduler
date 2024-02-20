@@ -6,6 +6,7 @@ const AppointMentListContainer = ({ children }: { children: React.ReactNode }) =
 
         <div style={{ width: "100%", minHeight: "40rem", display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center" }} >
             {children}
+
         </div>
 
     )

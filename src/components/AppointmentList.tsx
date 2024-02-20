@@ -1,20 +1,22 @@
-import { Button, Card, Empty, Select } from "antd"
+import { Button, Card, Empty, Input, Modal, Select } from "antd"
 import Meta from "antd/es/card/Meta"
 import { Appointments, useDoctorContext } from "../context/doctorContext"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AppointMentListContainer from "../pages/AppointMentListContainer"
 import { filterDataByTime } from "../utils"
 import { fetchData } from "../server/api.actions"
 import { putData } from "../api"
 import { currentWeek } from "../data"
+import { ExclamationCircleFilled } from '@ant-design/icons';
 
 
 // const customWeekStartEndFormat = (value) =>
 //     `${dayjs(value).startOf('isoWeek').format(weekFormat)} ~ ${dayjs(value).endOf('isoWeek').subtract(1, 'day').format(weekFormat)}`;
 
 
-
+const { confirm } = Modal;
+const { TextArea } = Input;
 const AppointmentList = () => {
     const [filteredappointments, setAppointments] = useState<Appointments[]>([]);
     const [refresh, setRefresh] = useState<boolean>(false)
@@ -22,19 +24,48 @@ const AppointmentList = () => {
     const navigate = useNavigate();
     const { updateView, view, appointments, updateAppointments } = useDoctorContext();
     console.log("view", view);
+    const remarksRef = useRef('');
 
-    const handleAllocate = async (id: string) => {
+
+    const handleSlotAllocation = (id: string) => {
+        confirm({
+            title: 'Do you want to allocate this slot ?',
+            icon: <ExclamationCircleFilled />,
+            content: <TextArea
+                className="remarks-input"
+
+                onChange={(e) => {
+                    remarksRef.current = e.target.value;
+                }
+                }
+                rows={4} placeholder="Any Remarks ?" />,
+            okText: 'Allocate',
+            okType: 'primary',
+            async onOk() {
+                // handleAllocate(id)
+                console.log("remarks", remarksRef.current);
+                try {
+                    const data = await putData(id, { isAllocated: true, remarks: remarksRef.current })
+                    console.log("data", data);
+                    setRefresh(!refresh)
+                } catch (error) {
+                    console.log("error", error);
+                }
+            },
+            onCancel() {
+                console.log('Cancel')
+            },
+        });
+    };
+
+    // const handleAllocate = async (id: string) => {
 
 
-        console.log("handleAllocate", id);
-        try {
-            const data = await putData(id, { isAllocated: true })
-            console.log("data", data);
-            setRefresh(!refresh)
-        } catch (error) {
-            console.log("error", error);
-        }
-    }
+    //     console.log("handleAllocate", id);
+    //     console.log("Remarks", remarks);
+    //     return
+
+    // }
 
     useEffect(() => {
 
@@ -214,7 +245,10 @@ const AppointmentList = () => {
                                     <span ><strong>Timings:</strong> {appointment?.time[0] + " to " + appointment?.time[1]}</span >
                                 </>}
                             />
-                            {view === "Sales Team View" && !appointment.isAllocated && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={() => handleAllocate(appointment?._id)} >Mark as Allocated</Button></div>}
+                            {view === "Sales Team View" && !appointment.isAllocated && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={
+                                // () => handleAllocate(appointment?._id)
+                                () => handleSlotAllocation(appointment?._id)
+                            } >Mark as Allocated</Button></div>}
                             {view === "Patient View" && <div style={{ width: "100%", display: "grid", placeItems: "center" }}> <Button style={{ margin: "10px" }} type="primary" size="large" htmlType="button" onClick={() => navigate("/book-appointment", { state: appointment })} >Book</Button></div>}
                         </Card>)
                     })

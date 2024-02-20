@@ -193,6 +193,29 @@ span {
   }
 }
 
+/* .remarks-input {
+  color: black !important;
+} */
+
+.span.ant-modal-confirm-title {
+  color: white !important;
+}
+.remarks-input::placeholder {
+  color: darkgrey !important;
+}
+
+:where(.css-dev-only-do-not-override-1b0bdye).ant-modal-confirm
+  .ant-modal-confirm-title {
+  color: white !important;
+}
+
+.ant-modal-content {
+  /* background: radial-gradient(black, transparent) !important; */
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: solid white 1px !important;
+  backdrop-filter: blur(50px) !important;
+}
+
 @media (min-width: 768px) and (max-width: 1024px) {
   .appointment-card-container {
     justify-content: center !important;
